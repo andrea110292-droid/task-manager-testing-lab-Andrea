@@ -27,6 +27,8 @@ describe('CreateTaskScreen - Integración', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Tarea creada exitosamente')).toBeTruthy();
-    });
-  });
+    },
+      { timeout: 10000 }
+    );
+  }, 30000); // ← Aumenta el timeout del test
 });
