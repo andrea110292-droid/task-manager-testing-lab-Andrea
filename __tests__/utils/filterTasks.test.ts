@@ -9,24 +9,50 @@ const mockTasks: Task[] = [
 ];
 
 describe('filterTasksByStatus', () => {
-  it('devuelve solo las tareas con el estado indicado', () => {
-    const result = filterTasksByStatus(mockTasks, 'completed');
-    expect(result).toHaveLength(2);
-    expect(result[0].title).toBe('Estudiar React Native');
+  
+  describe('cuando hay tareas que coinciden', () => {
+    it('devuelve solo las tareas con el estado indicado', () => {
+      const result = filterTasksByStatus(mockTasks, 'completed');
+      expect(result).toHaveLength(2);
+      expect(result[0].title).toBe('Estudiar React Native');
+    });
+
+    it('filtra correctamente tareas con estado pending', () => {
+      const result = filterTasksByStatus(mockTasks, 'pending');
+      expect(result).toHaveLength(2);
+      expect(result).toContain(mockTasks[0]); // Usa toContain
+    });
   });
 
-  it('devuelve un arreglo vacío cuando no hay coincidencias', () => {
-    const result = filterTasksByStatus(mockTasks, 'archived');
-    expect(result).toEqual([]);
+  describe('cuando no hay tareas que coincidan (CASO LÍMITE)', () => {
+    it('devuelve un arreglo vacío cuando no hay coincidencias', () => {
+      const result = filterTasksByStatus(mockTasks, 'archived');
+      expect(result).toEqual([]);
+    });
+
+    it('devuelve array vacío cuando la lista de entrada está vacía (CASO LÍMITE)', () => {
+      const emptyList: Task[] = [];
+      const result = filterTasksByStatus(emptyList, 'pending');
+      expect(result).toEqual([]);
+      expect(result).toHaveLength(0);
+    });
   });
 
-  it('devuelve todas las tareas cuando el estado es "all"', () => {
-    const result = filterTasksByStatus(mockTasks, 'all');
-    expect(result).toHaveLength(4);
-  });
+  describe('cuando el estado es especial o inválido', () => {
+    it('devuelve todas las tareas cuando el estado es "all"', () => {
+      const result = filterTasksByStatus(mockTasks, 'all');
+      expect(result).toHaveLength(4);
+      expect(result).toEqual(mockTasks);
+    });
 
-  it('lanza un error cuando el estado es inválido', () => {
-    // @ts-expect-error probando entrada inválida en runtime
-    expect(() => filterTasksByStatus(mockTasks, 'invalido')).toThrow();
+    it('lanza un error cuando el estado es inválido (CASO LÍMITE)', () => {
+      // @ts-expect-error probando entrada inválida en runtime
+      expect(() => filterTasksByStatus(mockTasks, 'invalido')).toThrow();
+    });
+
+    it('lanza un error cuando el estado es null (CASO LÍMITE)', () => {
+      // @ts-expect-error probando entrada nula en runtime
+      expect(() => filterTasksByStatus(mockTasks, null)).toThrow();
+    });
   });
 });
