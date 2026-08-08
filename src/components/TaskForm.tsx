@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { View, TextInput, Pressable, Text } from 'react-native';
 
 interface TaskFormProps {
-  onSubmit: (title: string) => void;
+  onSubmit: (title: string) => Promise<boolean> | void;
 }
 
 export function TaskForm({ onSubmit }: TaskFormProps) {
   const [title, setTitle] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!title.trim()) return;
-    onSubmit(title);
+    const success = await onSubmit(title);
+    if (success) {
+      setTitle('');
+    }
   };
 
   return (

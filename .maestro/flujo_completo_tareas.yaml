@@ -16,3 +16,6 @@ appId: com.taskmanager.app
 
 # 4. Verificar confirmación de creación
 - assertVisible: "Tarea creada exitosamente"
+
+# 5. Verificar que la tarea aparece en la lista
+- assertVisible: "Comprar materiales para el proyecto"

@@ -13,6 +13,7 @@ export function TaskCard({ task, onDelete }: TaskCardProps) {
     <View
       accessible
       accessibilityRole="button"
+      accessibilityLabel={`${task.title}, estado: ${done ? 'completada' : 'pendiente'}`}
       className="mb-2 rounded-lg border border-gray-200 bg-white p-4"
     >
       <Text className="text-base font-semibold text-gray-900">{task.title}</Text>
@@ -21,6 +22,7 @@ export function TaskCard({ task, onDelete }: TaskCardProps) {
       </Text>
       <Pressable
         onPress={() => onDelete(task.id)}
+        accessibilityRole="button"
         accessibilityLabel={`Eliminar tarea ${task.title}`}
       >
         <Text className="mt-2 text-sm font-medium text-red-600">Eliminar</Text>

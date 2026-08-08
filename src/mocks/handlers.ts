@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
-const API_URL = 'https://api.taskmanager.com';
+const API_URL = 'https://api.taskmanager-demo.invalid';
 
 export const handlers = [
   http.post(`${API_URL}/tasks`, async ({ request }) => {

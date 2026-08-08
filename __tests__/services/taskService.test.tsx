@@ -1,9 +1,13 @@
 import { fetchTasks, createTask } from '../../src/services/taskService';
+import { server } from '../../src/mocks/server';
+import { http, HttpResponse } from 'msw';
+
+const API_URL = 'https://api.taskmanager-demo.invalid';
 
 describe('taskService', () => {
-  it('createTask crea una tarea localmente con estructura correcta', async () => {
+  it('createTask crea una tarea vía API con estructura correcta', async () => {
     const task = await createTask('Nueva tarea de prueba');
-    
+
     expect(task.id).toBeDefined();
     expect(task.title).toBe('Nueva tarea de prueba');
     expect(task.status).toBe('pending');
@@ -11,39 +15,38 @@ describe('taskService', () => {
 
   it('createTask genera IDs que contienen timestamp (CASO LÍMITE)', async () => {
     const task = await createTask('Tarea 1');
-    
-    // El ID debe ser un string de números (timestamp)
+
+    // El ID debe ser un string de números (timestamp), según el handler mock
     expect(typeof task.id).toBe('string');
     expect(/^\d+$/.test(task.id)).toBe(true);
   });
 
-  it('fetchTasks lanza error cuando no hay conexión (API no existe)', async () => {
-    try {
-      await fetchTasks();
-      // Si no lanza error, la prueba falla
-      throw new Error('Debería haber lanzado un error');
-    } catch (error) {
-      // Esperamos que falle
-      expect(error).toBeDefined();
-      const message = (error as Error).message;
-      expect(message).toBeTruthy();
-    }
+  it('fetchTasks lanza error cuando la API responde con un error del servidor', async () => {
+    // Sobrescribimos el handler para simular una falla de la API
+    server.use(
+      http.get(`${API_URL}/tasks`, () => {
+        return new HttpResponse(null, { status: 500 });
+      })
+    );
+
+    await expect(fetchTasks()).rejects.toThrow('Error al obtener las tareas');
   });
 
   it('createTask retorna objeto Task con propiedades correctas', async () => {
     const task = await createTask('Verificar propiedades');
-    
+
     expect(typeof task.id).toBe('string');
     expect(typeof task.title).toBe('string');
     expect(task.status).toBe('pending');
   });
 
-  it('createTask no requiere conexión a API (ESTADO CONDICIONAL)', async () => {
-    // Esta prueba verifica que createTask funciona sin API
-    const task = await createTask('Tarea sin API');
-    
-    // Debería retornar exitosamente
-    expect(task).toBeDefined();
-    expect(task.title).toBe('Tarea sin API');
+  it('createTask lanza error cuando la API responde con un error (CASO DE ERROR)', async () => {
+    server.use(
+      http.post(`${API_URL}/tasks`, () => {
+        return new HttpResponse(null, { status: 500 });
+      })
+    );
+
+    await expect(createTask('Tarea que falla')).rejects.toThrow('Error al crear la tarea');
   });
 });
