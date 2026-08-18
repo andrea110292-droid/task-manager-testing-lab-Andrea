@@ -7,19 +7,19 @@ interface TaskCardProps {
   onDelete: (id: string) => void;
 }
 
-export function TaskCard({ task, onDelete }: TaskCardProps) {
+export const TaskCard = React.memo(function TaskCard({ task, onDelete }: TaskCardProps) {
   const done = task.status === 'completed';
   return (
-    <View
-      accessible
-      accessibilityRole="button"
-      accessibilityLabel={`${task.title}, estado: ${done ? 'completada' : 'pendiente'}`}
-      className="mb-2 rounded-lg border border-gray-200 bg-white p-4"
-    >
-      <Text className="text-base font-semibold text-gray-900">{task.title}</Text>
-      <Text className={`mt-1 text-sm ${done ? 'text-green-600' : 'text-gray-500'}`}>
-        {done ? '✓ Completada' : '○ Pendiente'}
-      </Text>
+    <View className="mb-2 rounded-lg border border-gray-200 bg-white p-4">
+      <View
+        accessible
+        accessibilityLabel={`${task.title}, estado: ${done ? 'completada' : 'pendiente'}`}
+      >
+        <Text className="text-base font-semibold text-gray-900">{task.title}</Text>
+        <Text className={`mt-1 text-sm ${done ? 'text-green-600' : 'text-gray-500'}`}>
+          {done ? '✓ Completada' : '○ Pendiente'}
+        </Text>
+      </View>
       <Pressable
         onPress={() => onDelete(task.id)}
         accessibilityRole="button"
@@ -29,4 +29,4 @@ export function TaskCard({ task, onDelete }: TaskCardProps) {
       </Pressable>
     </View>
   );
-}
+});
