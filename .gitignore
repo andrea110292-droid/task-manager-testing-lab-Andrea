@@ -39,3 +39,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# coverage reports
+coverage/
+
+# archivos de trabajo temporales
+error_completo.txt
+resultado_instalacion.txt
+pantalla_real.pngemulador.png
