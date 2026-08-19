@@ -7,10 +7,9 @@ import { ConfirmDeleteDialog } from '../components/ConfirmDeleteDialog';
 import { useCreateTask } from '../hooks/useCreateTask';
 
 export function CreateTaskScreen() {
-  const { status, tasks, submit, removeTask } = useCreateTask();
+  const { status, tasks, loadError, submit, removeTask } = useCreateTask();
   const insets = useSafeAreaInsets();
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
-
   const pendingTask = tasks.find((t) => t.id === pendingDelete);
 
   return (
@@ -25,9 +24,19 @@ export function CreateTaskScreen() {
           Tarea creada exitosamente
         </Text>
       )}
+      {status === 'success-local' && (
+        <Text className="rounded-lg bg-amber-100 px-4 py-3 text-sm font-medium text-amber-800">
+          Tarea guardada localmente (sin conexión)
+        </Text>
+      )}
       {status === 'error' && (
         <Text className="rounded-lg bg-red-100 px-4 py-3 text-sm font-medium text-red-800">
           Error al crear la tarea
+        </Text>
+      )}
+      {loadError && tasks.length === 0 && (
+        <Text className="rounded-lg bg-amber-100 px-4 py-3 text-sm font-medium text-amber-800">
+          No se pudieron cargar las tareas del servidor
         </Text>
       )}
       <TaskList tasks={tasks} onDelete={setPendingDelete} />

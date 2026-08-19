@@ -2,13 +2,18 @@ import { Task } from '../types';
 
 const API_URL = 'https://api.taskmanager-demo.invalid';
 
+export interface CreateTaskResult {
+  task: Task;
+  source: 'remote' | 'local';
+}
+
 export async function fetchTasks(): Promise<Task[]> {
   const res = await fetch(`${API_URL}/tasks`);
   if (!res.ok) throw new Error('Error al obtener las tareas');
   return res.json();
 }
 
-export async function createTask(title: string): Promise<Task> {
+export async function createTask(title: string): Promise<CreateTaskResult> {
   let res: Response;
   try {
     res = await fetch(`${API_URL}/tasks`, {
@@ -17,10 +22,13 @@ export async function createTask(title: string): Promise<Task> {
       body: JSON.stringify({ title }),
     });
   } catch {
-    // No hay conexión real a la API (ej. no existe backend en este entorno): fallback local
-    return { id: Date.now().toString(), title, status: 'pending' };
+    // Sin conexión con la API: se crea localmente, pero se informa el origen
+    // para que la interfaz no reporte un éxito remoto que no ocurrió.
+    return {
+      task: { id: `local-${Date.now()}`, title, status: 'pending' },
+      source: 'local',
+    };
   }
-
   if (!res.ok) throw new Error('Error al crear la tarea');
-  return res.json();
+  return { task: await res.json(), source: 'remote' };
 }

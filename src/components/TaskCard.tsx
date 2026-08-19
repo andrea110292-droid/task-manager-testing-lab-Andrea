@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Task } from '../types';
 
 interface TaskCardProps {
@@ -20,13 +20,15 @@ export const TaskCard = React.memo(function TaskCard({ task, onDelete }: TaskCar
           {done ? '✓ Completada' : '○ Pendiente'}
         </Text>
       </View>
-      <Pressable
+      <TouchableOpacity
         onPress={() => onDelete(task.id)}
         accessibilityRole="button"
         accessibilityLabel={`Eliminar tarea ${task.title}`}
+        hitSlop={12}
+        className="mt-2 self-start py-2 pr-4"
       >
-        <Text className="mt-2 text-sm font-medium text-red-600">Eliminar</Text>
-      </Pressable>
+        <Text className="text-sm font-medium text-red-600">Eliminar</Text>
+      </TouchableOpacity>
     </View>
   );
 });

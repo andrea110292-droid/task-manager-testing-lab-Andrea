@@ -1,0 +1,41 @@
+appId: com.taskmanager.app
+---
+# Flujo propio: creacion multiple y validacion del contador.
+# Recorrido distinto al flujo base: verifica el rechazo de entrada vacia,
+# la acumulacion de varias tareas y la actualizacion del contador.
+
+# 1. Abrir la app con estado limpio
+- launchApp:
+    clearState: true
+- assertVisible: "Nueva tarea"
+- assertVisible: "No hay tareas.*"
+
+# 2. Intento con campo vacio: no debe crear nada
+- tapOn: "Guardar"
+- assertVisible: "No hay tareas.*"
+
+# 3. Primera tarea
+- tapOn:
+    id: "input-titulo"
+- inputText: "Preparar informe de pruebas"
+- tapOn: "Guardar"
+- assertVisible: "Preparar informe de pruebas"
+- assertVisible: "1 tarea"
+
+# 4. Segunda tarea: el contador debe pluralizar
+- tapOn:
+    id: "input-titulo"
+- inputText: "Revisar cobertura de codigo"
+- tapOn: "Guardar"
+- assertVisible: "2 tareas"
+
+# 5. Tercera tarea
+- tapOn:
+    id: "input-titulo"
+- inputText: "Documentar los hallazgos del informe"
+- tapOn: "Guardar"
+- assertVisible: "3 tareas"
+
+# 6. Verificacion final
+- hideKeyboard
+- assertVisible: "3 tareas"

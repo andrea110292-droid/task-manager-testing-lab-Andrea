@@ -2,6 +2,7 @@ const expoPreset = require('jest-expo/jest-preset');
 
 module.exports = {
   preset: 'jest-expo',
+  setupFiles: ['./jest.env.js'],
   setupFilesAfterEnv: ['./jest.setup.js'],
   // ponytail: jest-expo's transform only matches .[jt]sx; msw ships .mjs deps
   // (rettime, @mswjs/interceptors). Add a .mjs -> babel-jest rule alongside them.
