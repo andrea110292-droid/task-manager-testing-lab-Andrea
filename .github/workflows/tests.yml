@@ -1,44 +1,35 @@
-appId: com.taskmanager.app
----
-# Flujo propio: ciclo de eliminación con diálogo de confirmación.
-# Cubre un recorrido distinto al flujo base: ejercita ConfirmDeleteDialog,
-# incluyendo la cancelación (la tarea debe permanecer) y la confirmación.
-# Se usa extendedWaitUntil porque el Modal tiene animación de entrada/salida.
+name: Test Suite
 
-# 1. Abrir la app con estado limpio
-- launchApp:
-    clearState: true
-- assertVisible: "Nueva tarea"
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
 
-# 2. Crear la tarea que luego se eliminará
-- tapOn:
-    id: "input-titulo"
-- inputText: "Tarea temporal para eliminar"
-- tapOn: "Guardar"
-- assertVisible: "Tarea temporal para eliminar"
+jobs:
+  test:
+    runs-on: ubuntu-latest
 
-# 3. Abrir el diálogo de confirmación desde la tarjeta
-- tapOn: "Eliminar tarea Tarea temporal para eliminar"
-- extendedWaitUntil:
-    visible: "Confirmar eliminación"
-    timeout: 5000
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
 
-# 4. CANCELAR: la tarea NO debe eliminarse
-- tapOn: "Cancelar"
-- extendedWaitUntil:
-    notVisible: "Confirmar eliminación"
-    timeout: 5000
-- assertVisible: "Tarea temporal para eliminar"
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-# 5. Reabrir el diálogo y CONFIRMAR la eliminación
-- tapOn: "Eliminar tarea Tarea temporal para eliminar"
-- extendedWaitUntil:
-    visible: "Confirmar eliminación"
-    timeout: 5000
-- tapOn: "Confirmar eliminación"
+      - name: Instalar dependencias
+        run: npm ci --legacy-peer-deps
 
-# 6. Verificar que la tarea desapareció de la lista
-- extendedWaitUntil:
-    notVisible: "Tarea temporal para eliminar"
-    timeout: 5000
-    
+      - name: Ejecutar pruebas con cobertura
+        run: npx jest --coverage --ci
+
+      - name: Publicar reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
