@@ -47,4 +47,5 @@ coverage/
 error_completo.txt
 resultado_instalacion.txt
 pantalla_real.png
-emulador.pngui*.xml
+emulador.png
+ui*.xml
